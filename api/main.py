@@ -1,11 +1,11 @@
 # api/app.py
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import Optional, List, Dict
+from typing import Dict, List
 from pathlib import Path
 import os, json, uuid, threading
-from threading import Event   # ✅ necesario para manejar los waiters
+from threading import Event
 
 # ===== rutas del proyecto =====
 try:
@@ -48,7 +48,7 @@ class Item(BaseModel):
 # ===== caches =====
 RESULTS: Dict[str, Dict] = {}
 PENDING_TEXT: Dict[str, str] = {}
-WAITERS: Dict[str, Event] = {}   # ✅ aquí guardamos los eventos de espera
+WAITERS: Dict[str, Event] = {}
 
 # ===== helpers =====
 def simple_urgency(text: str, sentiment: str) -> str:
@@ -108,13 +108,17 @@ def bg_consume():
     try:
         while True:
             msg = cons.poll(1.0)
-            if not msg: continue
+            if not msg:
+                continue
             if msg.error():
-                print("KafkaErr:", msg.error()); continue
+                print("KafkaErr:", msg.error())
+                continue
             try:
                 evt = json.loads(msg.value().decode("utf-8"))
                 cid = evt.get("correlation_id")
-                if not cid: continue
+                if not cid:
+                    continue
+
                 RESULTS[cid] = evt
 
                 text = PENDING_TEXT.pop(cid, None)
@@ -130,7 +134,6 @@ def bg_consume():
                     if sentiment == "negative" and urg == "high":
                         append_alert(ALERTS_CSV, "negativo/alto", sentiment, urg, "umbral auto", aspects_str)
 
-                # 🔔 Despierta a quien esté esperando este cid
                 waiter = WAITERS.pop(cid, None)
                 if waiter:
                     waiter.set()
@@ -143,7 +146,6 @@ def bg_consume():
 
 @app.on_event("startup")
 def _startup():
-    # crea los topics antes de arrancar el consumer
     ensure_topics(KAFKA_BROKERS, [
         TOPIC_SENT_IN, TOPIC_SENT_OUT,
         TOPIC_ABSA_IN, TOPIC_ABSA_OUT
@@ -163,24 +165,22 @@ def predict_one(item: Item):
         PENDING_TEXT[cid] = item.text
         waiter = Event()
         WAITERS[cid] = waiter
-        if not waiter.wait(timeout=10):   # ⏳ espera hasta 10s
+        if not waiter.wait(timeout=10):
             raise TimeoutError("timeout esperando resultado de Kafka")
         evt = RESULTS.pop(cid, None)
         if not evt:
             raise ValueError("sin resultado")
-        return evt   # ✅ devuelve el resultado directo
+        return evt
     except Exception as e:
         return JSONResponse(status_code=500, content={"detail": f"error en /predict: {e}"})
 
-# ===== arranque rápido =====
+# ===== arranque local =====
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
-        "main:app",   # 👈 ajusta si tu archivo se llama distinto
+        app,                       # ← lanzar el objeto app directamente
         host="0.0.0.0",
         port=int(os.getenv("PORT", 8000)),
         log_level="info"
     )
 
-        log_level="info"
-    )
