@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 FROM python:3.11-slim AS builder
 WORKDIR /app
-COPY src/requirements.txt requirements.txt
+COPY requirements.txt requirements.txt
 RUN pip install --upgrade pip && pip wheel -w /wheels -r requirements.txt
 
 FROM python:3.11-slim
@@ -23,6 +23,7 @@ ENV KAFKA_BROKERS=kafka:9092 \
     MODEL_PATH=/app/models/02_baseline_best.joblib
 
 CMD ["python", "main.py"]
+
 
 
 
