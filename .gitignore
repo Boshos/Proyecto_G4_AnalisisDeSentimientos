@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.env
+.venv
+venv/
+
+# Colab / Jupyter
+.ipynb_checkpoints/
+*.checkpoint.ipynb
+
+# Datos y modelos
+# data/  # comentado para permitir subir
+datasets/
+*.csv
+*.parquet
+*.xlsx
+*.pth
+*.pt
+*.h5
+# models/  # comentado para permitir subir
+checkpoints/
+# Sistema
+.DS_Store
+Thumbs.db
+
+
+
+
+
