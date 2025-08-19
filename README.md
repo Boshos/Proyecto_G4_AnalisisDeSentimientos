@@ -30,7 +30,7 @@ Puedes acceder al dashboard en producción aquí:
 
 - Sistema distribuido: Al utilizar Kafka es necesario desplegar diferentes servicios que se comuniquen a traves del broker, para ello se utiliza un monorepo en donde cada cada servicio tendrá su requirement.text y main.py respectivamente.
   
-**ESTRUCTURA DEL PROYECTO** (será modificada una vez que se termine de subir la información...)
+**ESTRUCTURA DEL PROYECTO** 
 ```
 ├── api/                        # Microservicio de la API (FastAPI)
 │   ├── app.py                  # Aplicación principal de la API
