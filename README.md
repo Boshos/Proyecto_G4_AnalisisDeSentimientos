@@ -16,7 +16,7 @@ El sistema utiliza modelos de Procesamiento del Lenguaje Natural (NLP) para proc
 
 - Procesamiento en Tiempo Real: Capaz de procesar flujos de datos continuos desde diversas fuentes (APIs, web scraping).
 
-**ESTRUCTURA DEL PROYECTO** (será modificada una vez que se termine de subir la información...)
+**ESTRUCTURA DEL PROYECTO** (será modificada una vez que se termine de subir la información....)
 ```
 ├── README.md
 ├── requirements.txt
