@@ -19,9 +19,10 @@ ENV KAFKA_BROKERS=kafka:9092 \
     TOPIC_IN=ml.absa.in \
     TOPIC_OUT=ml.absa.out \
     GROUP_ID=absa-v1 \
-    MODELS_DIR=/app/models
+    MODELS_DIR=models
 
 CMD ["python", "main.py"]
+
 
 
 
