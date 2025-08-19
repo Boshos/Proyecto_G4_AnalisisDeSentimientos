@@ -79,7 +79,7 @@ Puedes acceder al dashboard en producción aquí:
 └── README.md                   # Documentación principal del proyecto
                
 ```
-**Resultados y Evidencia**
+**RESULTADOS Y EVIDENCIA**
 
 Los principales resultados del proyecto se encuentran en:
 
