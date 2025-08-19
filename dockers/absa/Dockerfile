@@ -16,7 +16,7 @@ RUN apt-get update \
 COPY --from=builder /wheels /wheels
 RUN pip install /wheels/* && rm -rf /wheels
 
-COPY src/main.py /app/main.py
+COPY main.py /app/main.py
 
 COPY src/04_aspect_*_clf.joblib /app/models/
 
@@ -27,4 +27,5 @@ ENV KAFKA_BROKERS=kafka:9092 \
     MODELS_DIR=/app/models
 
 CMD ["python", "main.py"]
+
 
