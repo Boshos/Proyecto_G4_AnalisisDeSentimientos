@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends librdkafka-dev 
 COPY --from=builder /wheels /wheels
 RUN pip install /wheels/* && rm -rf /wheels
 
-COPY src/dockers/absa/main.py ./main.py
+COPY dockers/absa/main.py ./main.py
 # Copia TODOS los modelos de aspectos
 COPY models/trained_models/04_aspect_*_clf.joblib ./models/
 
@@ -21,5 +21,6 @@ ENV KAFKA_BROKERS=kafka:9092 \
     MODELS_DIR=/app/models
 
 CMD ["python", "main.py"]
+
 
 
