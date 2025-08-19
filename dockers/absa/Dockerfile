@@ -2,7 +2,7 @@
 FROM python:3.11-slim AS builder
 WORKDIR /app
 
-COPY src/requirements.txt /app/requirements.txt
+COPY requirements.txt /app/requirements.txt
 RUN pip install --upgrade pip && pip wheel -w /wheels -r /app/requirements.txt
 
 FROM python:3.11-slim
@@ -27,3 +27,4 @@ ENV KAFKA_BROKERS=kafka:9092 \
     MODELS_DIR=/app/models
 
 CMD ["python", "main.py"]
+
