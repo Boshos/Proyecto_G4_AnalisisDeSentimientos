@@ -13,7 +13,7 @@ RUN pip install /wheels/* && rm -rf /wheels
 COPY main.py ./main.py
 
 RUN mkdir -p ./models
-COPY models/*.joblib ./models/
+COPY *.joblib ./models/
 
 ENV KAFKA_BROKERS=kafka:9092 \
     TOPIC_IN=ml.absa.in \
@@ -22,6 +22,7 @@ ENV KAFKA_BROKERS=kafka:9092 \
     MODELS_DIR=/app/models
 
 CMD ["python", "main.py"]
+
 
 
 
