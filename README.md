@@ -35,10 +35,7 @@ Puedes acceder al dashboard en producción aquí:
 **ESTRUCTURA DEL PROYECTO** 
 ```
 ├── api/                        # Microservicio de la API (FastAPI)
-│   ├── app.py                  # Aplicación principal de la API
-│   ├── routes/                 # Definición de endpoints
-│   ├── schemas/                # Definiciones de datos y validaciones
-│   └── src/utils/              # Funciones de apoyo para la API
+│   ├── src/utils/              # Funciones de apoyo para la API
 │   └── requirements.txt        # Dependencias necesarias para la API
 │
 ├── dashboard/                  # Código del dashboard de visualización (Streamlit)
