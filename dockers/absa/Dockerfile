@@ -1,35 +1,24 @@
 
 FROM python:3.11-slim AS builder
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    librdkafka-dev ca-certificates build-essential \
- && rm -rf /var/lib/apt/lists/*
-
-COPY requirements.txt ./requirements.txt
-RUN pip install --upgrade pip && pip wheel -w /wheels -r requirements.txt
-
+COPY src/requirements.txt /app/requirements.txt
+RUN pip install --upgrade pip && pip wheel -w /wheels -r /app/requirements.txt
 
 FROM python:3.11-slim
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    librdkafka-dev ca-certificates \
+#  para confluent-kafka
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends librdkafka-dev ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /wheels /wheels
 RUN pip install /wheels/* && rm -rf /wheels
 
-COPY main.py ./main.py
+COPY src/main.py /app/main.py
 
-RUN mkdir -p /app/models
-
-
-COPY src/*.joblib /app/models/
+COPY src/04_aspect_*_clf.joblib /app/models/
 
 ENV KAFKA_BROKERS=kafka:9092 \
     TOPIC_IN=ml.absa.in \
@@ -38,9 +27,3 @@ ENV KAFKA_BROKERS=kafka:9092 \
     MODELS_DIR=/app/models
 
 CMD ["python", "main.py"]
-
-
-
-
-
-
