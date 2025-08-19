@@ -136,9 +136,7 @@ El sistema está diseñado bajo un enfoque de microservicios que se comunican a 
 
 5. La API recoge las respuestas y las entrega al Dashboard, que las muestra al usuario.
 
-**Conclusiones**
-
-## 📌 Conclusiones y Futuro Trabajo
+**CONCLUSIONES**
 
 El proyecto demostró que es posible integrar modelos de análisis de sentimientos y ABSA en un sistema distribuido basado en microservicios. 
 Gracias al uso de Kafka, la arquitectura es escalable, resiliente y permite procesar datos en tiempo real de manera eficiente.
