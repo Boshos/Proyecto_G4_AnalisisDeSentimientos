@@ -1,125 +1,59 @@
-import os, json, time, joblib, glob, re
 from pathlib import Path
-from confluent_kafka import Consumer, Producer
+import os
+import joblib
+import warnings
 
-BOOTSTRAP = os.getenv("KAFKA_BROKERS", "kafka:9092")
-GROUP_ID  = os.getenv("GROUP_ID", "absa-consumer")
-TOPIC_IN  = os.getenv("TOPIC_IN", "ml.absa.in")
-TOPIC_OUT = os.getenv("TOPIC_OUT", "ml.absa.out")
-MODELS_DIR= os.getenv("MODELS_DIR", "/app/models")
+warnings.filterwarnings("ignore")
 
-MODELS_PATH = Path(MODELS_DIR)
-MODELS_PATH.mkdir(parents=True, exist_ok=True)
+MODELS_DIR = Path(os.getenv("MODELS_DIR", "/app/models"))
 
-def is_lfs_pointer(p: Path) -> bool:
-    try:
-        head = p.read_bytes()[:200]
-        return b"git-lfs.github.com/spec/v1" in head
-    except Exception:
-        return False
+print(f"🔎 Buscando modelos en {MODELS_DIR} ...")
 
-def load_bundle(path: Path):
-    """
-    Devuelve (model, preproc, kind):
-      - kind='pipeline' si es un Pipeline o estimador que acepta texto
-      - kind='pair'     si es (model, preproc)
-      - kind='dict'     si viene dict con 'model' y opcional 'preproc'
-    """
-    obj = joblib.load(path)
+def _aspect_from_filename(p: Path) -> str:
+    name = p.stem
+    name = name.replace("04_aspect_", "").replace("_clf", "")
+    return name
 
-    # 1) dict {"model":..., "preproc":...}
-    if isinstance(obj, dict) and "model" in obj:
-        return obj["model"], obj.get("preproc"), "dict"
+def load_models(models_dir: Path, min_size_bytes: int = 1024) -> dict:
+    models = {}
+    if not models_dir.exists():
+        print(f"⚠️ Carpeta {models_dir} no existe. Arrancando sin modelos.")
+        return models
 
-    # 2) tuple (model, preproc)
-    if isinstance(obj, tuple) and len(obj) == 2:
-        return obj[0], obj[1], "pair"
+    for path in sorted(models_dir.glob("04_aspect_*_clf.joblib")):
+        size = path.stat().st_size
+        print(f" - {path.name}  ({size} bytes)")
+        if size < min_size_bytes:
+            print(f"   ↪️  Omitido: archivo demasiado pequeño (posible vacío/corrupto).")
+            continue
 
-    # 3) Pipeline/estimador directo
-    return obj, None, "pipeline"
+        try:
+            bundle = joblib.load(path)
+        except Exception as e:
+            print(f"   ↪️  Omitido: error al cargar {path.name}: {e}")
+            continue
 
-# ---- Cargar todos los modelos 04_aspect_*_clf.joblib ----
-ASPECT_MODELS = {}
-
-paths = sorted(MODELS_PATH.glob("04_aspect_*_clf.joblib"))
-print(f"🔎 Buscando modelos en {MODELS_PATH} ...")
-for p in paths:
-    try:
-        print(f" - {p.name}  ({p.stat().st_size} bytes)")
-    except Exception:
-        print(f" - {p.name}  (no se pudo leer tamaño)")
-
-if not paths:
-    raise RuntimeError(f"No hay modelos de aspecto en {MODELS_DIR}/04_aspect_*_clf.joblib")
-
-# Verifica punteros LFS
-for p in paths:
-    if is_lfs_pointer(p):
-        raise RuntimeError(
-            f"El archivo {p} es un PUNTERO de Git LFS, no el binario del modelo.\n"
-            "Soluciones: sube el .joblib real (sin LFS) o descárgalo en el Dockerfile."
-        )
-
-for path in paths:
-    try:
-        model, pre, kind = load_bundle(path)
-    except Exception as e:
-        raise RuntimeError(f"Error al cargar {path.name}: {e}")
-
-    aspect = re.sub(r"^04_aspect_|_clf\.joblib$", "", path.name)
-    ASPECT_MODELS[aspect] = (model, pre, kind)
-
-print("✅ ABSA loaded aspects:", ", ".join(sorted(ASPECT_MODELS.keys())))
-
-def infer_all(payload: dict | str):
-    text = payload["text"] if isinstance(payload, dict) else str(payload)
-    results = {}
-    for aspect, (model, pre, kind) in ASPECT_MODELS.items():
-        if kind == "pipeline":
-            # pipeline/estimador que acepta texto directamente
-            y = model.predict([text])[0]
-        elif pre is not None:
-            X = pre.transform([text])
-            y = model.predict(X)[0]
+        model = None
+        preproc = None
+        if isinstance(bundle, dict):
+            model = bundle.get("model") or bundle.get("pipeline") or bundle.get("clf")
+            preproc = bundle.get("preproc") or bundle.get("vectorizer") or bundle.get("tfidf")
         else:
-            # sin preproc: intenta con texto crudo como vector de 1 elem.
-            y = model.predict([text])[0]
-        results[aspect] = y
-    return results
+            model = bundle
 
-# ---- Kafka clients ----
-c = Consumer({
-    "bootstrap.servers": BOOTSTRAP,
-    "group.id": GROUP_ID,
-    "auto.offset.reset":"earliest",
-    "enable.auto.commit": True
-})
-p = Producer({"bootstrap.servers": BOOTSTRAP})
+        if model is None:
+            print(f"   ↪️  Omitido: bundle sin 'model' válido en {path.name}")
+            continue
 
-def main():
-    c.subscribe([TOPIC_IN])
-    print(f"🎧 ABSA listening: {TOPIC_IN}")
-    try:
-        while True:
-            m = c.poll(1.0)
-            if not m:
-                continue
-            if m.error():
-                print("KafkaErr:", m.error())
-                continue
-            try:
-                evt = json.loads(m.value().decode("utf-8"))
-                cid = evt.get("correlation_id", "no-cid")
-                res = infer_all(evt.get("payload", ""))
-                out = {"correlation_id": cid, "result": res, "ts": time.time()}
-                p.produce(TOPIC_OUT, json.dumps(out).encode("utf-8"), key=cid)
-                p.poll(0)
-                print("✅ processed:", out)
-            except Exception as e:
-                print("❌ processing error:", e)
-    finally:
-        c.close()
-        p.flush()
+        aspect = _aspect_from_filename(path)
+        models[aspect] = {"model": model, "preproc": preproc}
+        print(f"   ✅ Cargado modelo para aspecto: {aspect}")
 
-if __name__ == "__main__":
-    main()
+    return models
+
+MODELS = load_models(MODELS_DIR)
+
+if not MODELS:
+ 
+    print("Models")
+ 
