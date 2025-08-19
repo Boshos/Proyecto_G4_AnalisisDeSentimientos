@@ -23,7 +23,7 @@ Utilizamos técnicas avanzadas de **Procesamiento de Lenguaje Natural (NLP)** pa
 ### 1. Clona este repositorio
 
 ```bash
-git clone https://github.com/tu_usuario/Proyecto_G4_AnalisisDeSentimientos.git
+git clone https://github.com/Boshos/Proyecto_G4_AnalisisDeSentimientos.git
 cd Proyecto_G4_AnalisisDeSentimientos
 ```
 
