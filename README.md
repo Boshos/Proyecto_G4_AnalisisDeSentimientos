@@ -13,7 +13,9 @@ El objetivo principal es ayudar a las empresas a monitorear automáticamente las
 - Nivel de urgencia para priorizar la atención al cliente.
 
 El sistema utiliza modelos de Procesamiento del Lenguaje Natural (NLP) para procesar grandes volúmenes de texto en tiempo real, permitiendo a las empresas actuar de manera proactiva en su servicio al cliente y estrategia de producto.
+
 **ACCESO AL DASHOARD:**
+
 Puedes acceder al dashboard en producción aquí:
 
 <p align="center"> <a href="https://proyectog4analisisdesentimientos-production.up.railway.app/" target="_blank"> <img src="https://img.shields.io/badge/Dashboard-Online-success?style=for-the-badge&logo=streamlit" alt="Dashboard Online"/> </a> </p>
