@@ -66,13 +66,14 @@ Puedes acceder al dashboard en producción aquí:
 ├── notebooks/                  # Jupyter notebooks del proyecto
 │   ├── exploratory/            # Análisis exploratorio de datos (EDA)
 │   ├── modeling/               # Entrenamiento y pruebas de modelos
-│   └── evaluation/             # Evaluación de resultados y métricas
+│   └── evaluation/             # Pruebas dashboard local
 │
 ├── test/                       # Pruebas unitarias e integración
 │
 ├── utils/                      # Funciones genéricas de apoyo (logging, métricas, etc.)
 │
 ├── .gitignore                  # Archivos/carpetas a ignorar por Git
+├── Informe_Tecnico             # Archivo PDF, explicación proyecto
 └── README.md                   # Documentación principal del proyecto
                
 ```
