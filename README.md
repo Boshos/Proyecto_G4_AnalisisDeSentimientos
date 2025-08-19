@@ -1,9 +1,22 @@
-**Proyecto de Análisis de Sentimientos de reseñas de productos de amazon**
+**PROYECTO: Análisis de Sentimientos de reseñas de productos de amazon**
+
 **DESCRIPCIÓN DEL PROYECTO**
 
 Este proyecto es una Plataforma de Análisis de Sentimientos en Tiempo Real para e-commerce. Nuestro objetivo principal es ayudar a las empresas a monitorear automáticamente las reseñas de productos y las menciones en redes sociales, identificando rápidamente problemas de calidad y oportunidades de mejora.
 
+El objetivo principal es ayudar a las empresas a monitorear automáticamente las reseñas y menciones, identificando rápidamente:
+
+- Opiniones positivas, negativas o neutras.
+
+- Problemas específicos de precio, calidad o envío.
+
+- Nivel de urgencia para priorizar la atención al cliente.
+
 El sistema utiliza modelos de Procesamiento del Lenguaje Natural (NLP) para procesar grandes volúmenes de texto en tiempo real, permitiendo a las empresas actuar de manera proactiva en su servicio al cliente y estrategia de producto.
+**ACCESO AL DASHOARD:**
+Puedes acceder al dashboard en producción aquí:
+
+<p align="center"> <a href="https://proyectog4analisisdesentimientos-production.up.railway.app/" target="_blank"> <img src="https://img.shields.io/badge/Dashboard-Online-success?style=for-the-badge&logo=streamlit" alt="Dashboard Online"/> </a> </p>
 
 **CARATERÍSTICAS PRINCIPALES:**
 
@@ -67,9 +80,12 @@ El sistema utiliza modelos de Procesamiento del Lenguaje Natural (NLP) para proc
 
 Los principales resultados del proyecto se encuentran en:
 
-- EDA: distribución de reseñas y palabras más frecuentes.
+- EDA: Distribución de reseñas y palabras más frecuentes.
+  
+**Figura 1.** Distribución de longitud de reseñas.
 <img width="1890" height="1406" alt="01_distribucion_longitud_resenas" src="https://github.com/user-attachments/assets/81a31923-ff30-46a0-ad73-cdf5d5635ccd" />
 
+**Figura 2.** Cantidad de menciones por aspecto (precio, calidad y envío).
 <img width="1890" height="1406" alt="01_menciones_por_aspecto" src="https://github.com/user-attachments/assets/a3ea2107-d991-4d0e-8437-084cd2b80494" />
 
 Modelos:
@@ -79,14 +95,22 @@ Modelos:
 - BERT Tiny con embeddings preentrenados.
 
 - ABSA: detección de opiniones sobre precio, calidad y envío.
+  
+**Figura 3.** Rendimiento del modelo ABSA — F1 por aspecto.
 <img width="689" height="390" alt="04_absa_f1 (1)" src="https://github.com/user-attachments/assets/827b181a-3367-4866-8de1-3de095f4a6ec" />
 
 - Dashboard: visualización de KPIs (porcentaje de reseñas negativas, urgencia alta, top aspectos con problemas, tendencias).
+
+**Figura 4.** Dashboard con KPIs de análisis de sentimientos.
 ![WhatsApp Image 2025-08-18 at 21 35 05](https://github.com/user-attachments/assets/53d3c497-1030-4c1a-946c-7a95c031b285)
 
  Ver carpeta docs/images/ para las evidencias del dashboard.
+ 
 **ARQUITECTURA DEL PROYECTO**
+
 El sistema está diseñado bajo un enfoque de microservicios que se comunican a través de Apache Kafka. La idea es mantener los componentes desacoplados, escalables y fáciles de mantener.
+
+**Figura 5.** Arquitectura de microservicios desplegada en Railway.
 ![WhatsApp Image 2025-08-18 at 21 34 12](https://github.com/user-attachments/assets/57522364-6f99-42b0-aadf-a1792641bf22)
 
 La API recoge las respuestas y las entrega al Dashboard, que las muestra al usuario.
@@ -112,6 +136,20 @@ El sistema está diseñado bajo un enfoque de microservicios que se comunican a 
 
 5. La API recoge las respuestas y las entrega al Dashboard, que las muestra al usuario.
 
+**Conclusiones**
+
+## 📌 Conclusiones y Futuro Trabajo
+
+El proyecto demostró que es posible integrar modelos de análisis de sentimientos y ABSA en un sistema distribuido basado en microservicios. 
+Gracias al uso de Kafka, la arquitectura es escalable, resiliente y permite procesar datos en tiempo real de manera eficiente.
+
+Los experimentos mostraron un buen desempeño en la detección de sentimientos y en el análisis por aspectos clave como precio, calidad y envío, 
+logrando métricas consistentes en distintos escenarios.
+
+Como trabajo futuro, se propone ampliar la cobertura de aspectos analizados, optimizar los modelos con técnicas más avanzadas de NLP, 
+y explorar integraciones adicionales con sistemas de notificación y alertas en entornos productivos.
+
+
 **COLABORADORES DEL PROYECTO**
 
 - David Francisco Alvarez Alvarez
@@ -120,3 +158,4 @@ El sistema está diseñado bajo un enfoque de microservicios que se comunican a 
 - Lady Anahi Garces velasco
 - Daniela Estefania Pezantez Chimbo
 - María Mercedes Vera Letamendi
+
