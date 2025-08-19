@@ -56,7 +56,7 @@ Puedes acceder al dashboard en producción aquí:
 │
 ├── docs/                       # Documentación adicional del proyecto
 │   ├── images/                 # Imágenes de resultados y visualizaciones
-│   └── reports/                # Reportes técnicos y logs de experimentos
+│   └── reports/                # logs de experimentos
 │
 ├── models/                     # Modelos y configuraciones
 │   ├── trained_models/         # Modelos entrenados (.joblib, transformers)
